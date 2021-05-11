@@ -17,17 +17,13 @@ function changeValue(event) {
 
     let value = event.target.parentNode.querySelector('.product__quantity-value');
     let count = +value.innerText;
-
+    
     if (event.target.classList.contains('product__quantity-control_inc')) {
-        count++;
-        value.innerText = count;
+        value.innerText = Number(value.innerText) + 1;
     } else {
         if (count > 1) {
-            count--;
-            value.innerText = count;
-        } else {
-            value.innerText = 1;
-        }
+            value.innerText = Number(value.innerText) - 1;
+        } 
     }
 }
 

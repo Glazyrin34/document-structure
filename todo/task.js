@@ -1,82 +1,42 @@
 "use strict";
 
-const btn = document.getElementById('tasks__add');
-const taskList = document.getElementById('tasks__list');
+const tasksInput = document.getElementById(`task__input`);
+const tasksAddButton = document.getElementById(`tasks__add`);
+const tasksList = document.getElementById(`tasks__list`);
+let taskRemoveButton;
+let tasks;
 
-btn.addEventListener('click', addTask);
+function taskAdd() {
+    if (tasksInput.value) {
+        event.preventDefault();
 
-function addTask(event) {
+        tasksList.insertAdjacentHTML(`beforeEnd`, `
+            <div class="task">
+            <div class="task__title">
+                ${tasksInput.value}
+            </div>
+            <a href="#" class="task__remove">&times;</a>
+            </div>`);
+        
+        tasksInput.value = "";
 
-    event.preventDefault();
-
-    let text = document.getElementById('task__input');
-    if (text.value === '') return;
-
-    const task = `<div class="task">
-                    <div class="task__title">
-                    ${text.value}
-                    </div>
-                    <a href="#" class="task__remove">&times;</a>
-                  </div>`;
-
-    taskList.insertAdjacentHTML('beforeEnd', task);
-
-    localTasks = JSON.parse(localStorage.tasks);
-    localTasks.push(text.value);
-    localStorage.tasks = JSON.stringify(localTasks);
-
-    text.value = '';
-
-    canBeDeleted();
-}
-
-function canBeDeleted() {
-
-    const removeList = document.querySelectorAll('.task__remove');
-
-    for (let item of removeList) {
-        item.addEventListener('click', removeTask);
+        taskRemoveButton = document.getElementsByClassName(`task__remove`);
+        tasks = document.getElementsByClassName(`task`);        
     }
 }
 
-function removeTask(event) {
+tasksAddButton.addEventListener(`click`, taskAdd);
 
-    event.preventDefault();
-    event.target.closest('.task').remove();
-
-    let key = event.target.closest('.task').querySelector('.task__title').textContent.trim();
-
-    for (let item of JSON.parse(localStorage.tasks)) {
-        if (key === item) {
-
-            localTasks = JSON.parse(localStorage.tasks);
-            localTasks.splice(localTasks.indexOf(key), 1);
-            localStorage.tasks = JSON.stringify(localTasks);
-        }
+tasksInput.addEventListener(`keydown`, event => {    
+    if (event.keyCode === 13) {
+        taskAdd();            
     }
+});
 
-}
+tasksList.onclick = function(event) {
+    let target = event.target;
 
-function init() {
-
-    if (!localStorage.tasks) {
-        localStorage.setItem('tasks', '[]');
-        return;
-    } else {
-
-        for (let title of JSON.parse(localStorage.tasks)) {
-
-            const task = `<div class="task">
-                                <div class="task__title">
-                                ${title}
-                                </div>
-                                <a href="#" class="task__remove">&times;</a>
-                              </div>`;
-
-            taskList.insertAdjacentHTML('beforeEnd', task);
-        }
-        canBeDeleted();
+    if ( target.classList.contains(`task__remove`) ) {
+        target.closest(`.task`).remove();
     }
 }
-
-init();
